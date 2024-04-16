@@ -56,9 +56,14 @@ def delete_pet(pet_id):
     if not pet:
         abort(404, 'Pet not found')
     
+    adoptions = Adoption.query.filter_by(pet_id=pet_id).all()
+    for adoption in adoptions:
+        db.session.delete(adoption)
+
     db.session.delete(pet)
     db.session.commit()
     return jsonify({'message': 'Pet deleted successfully'})
+
 
 @app.route('/adoptions', methods=['POST'])
 def create_adoption():

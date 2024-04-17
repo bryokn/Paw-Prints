@@ -64,6 +64,7 @@ def delete_pet(pet_id):
     db.session.commit()
     return jsonify({'message': 'Pet deleted successfully'})
 
+       # return jsonify({'error': 'Pet not found'}), 404
 
 @app.route('/adoptions', methods=['POST'])
 def create_adoption():
@@ -74,15 +75,18 @@ def create_adoption():
     if not pet_id or not adopter_name:
         abort(400, 'Both pet_id and adopter_name are required.')
 
-    pet = Pet.query.get(pet_id)
+    '''pet = Pet.query.get(pet_id)
     if not pet:
-        abort(404, 'Pet not found.')
+        abort(404, 'Pet not found.')'''
 
-    adoption = Adoption(pet_id=pet_id, adopter_name=adopter_name, adoption_date=datetime.now())
-    db.session.add(adoption)
-    db.session.commit()
-    logger.info(f'Adoption created: {adoption.to_dict()}')
-    return jsonify(adoption.to_dict()), 201
+    pet = Pet.query.get(data['pet_id'])
+    if pet:
+        adoption = Adoption(pet_id=data['pet_id'], adopter_name=data['adopter_name'])
+        db.session.add(adoption)
+        db.session.commit()
+        return jsonify(adoption.to_dict()), 201
+    else:
+        return jsonify({'error': 'Pet not found'}), 404
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -18,7 +18,8 @@ with app.app_context():
     pet10 = Pet(name='Zoey', species='Cat', breed='Bengal', age=1, gender='Female', size='Medium', image_url='https://www.zooplus.ie/magazine/wp-content/uploads/2018/05/bengalkatze-768x512.jpg')
 
     db.session.add_all([pet1, pet2, pet3, pet4, pet5, pet6, pet7, pet8, pet9, pet10])
-    db.session.commit()
+#    db.session.commit()
+
 
     # Add sample adoption data
     today = datetime.now()

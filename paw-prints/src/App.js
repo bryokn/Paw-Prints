@@ -1,12 +1,14 @@
+// App.js
+
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
-  //state variables for the list of pets and the search term
+  // state variables for the list of pets and the search term
   const [pets, setPets] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('')
+  const [searchTerm, setSearchTerm] = useState('');
 
-  //fetch list of pets from the server whe component mounts
+  // fetch list of pets from the server when component mounts
   useEffect(() => {
     fetch('http://localhost:5000/pets', {
       mode: 'cors'
@@ -19,21 +21,23 @@ function App() {
   }, []);
 
   // handle search input change
-  const handleSearch = (event) =>{
+  const handleSearch = event => {
     setSearchTerm(event.target.value);
-  }
+  };
 
-  //filter pets based on search term
-  const filteredPets = pets.filter(pet => 
-  pet.name.toLowerCase().includes(searchTerm.toLowerCase())
-);
+  // filter pets based on search term
+  const filteredPets = pets.filter(pet =>
+    pet.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="App">
       <h1>Paw-Prints</h1>
       <h2>Where Every Paw Finds Its Perfect Print</h2>
-      <h3><i>Your Path to Pet Adoption!</i></h3>
-      {/**Render search input */}
+      <h3>
+        <i>Your Path to Pet Adoption!</i>
+      </h3>
+      {/* Render search input */}
       <input
         type="text"
         placeholder="Search by name"
@@ -43,7 +47,7 @@ function App() {
       {/* Render the list of pets */}
       <div className="pet-container">
         {filteredPets.map(pet => (
-          <div key={pet.id} className="pet-tile">
+          <div key={pet.id} className="pet-tile pet-card">
             {/* Render the pet's image, name, and other details */}
             <img src={pet.image_url} alt={pet.name} width="200" height="150" />
             <h2>{pet.name}</h2>
@@ -59,6 +63,5 @@ function App() {
     </div>
   );
 }
-
 
 export default App;

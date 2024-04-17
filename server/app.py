@@ -1,20 +1,25 @@
+#import necessary modules
 from flask import Flask, jsonify, request, abort
 from flask_migrate import Migrate
-from models import db, Pet, Adoption
+from models import db, Pet, Adoption #import db models
 from datetime import datetime
 import logging
 
-app = Flask(__name__)
+app = Flask(__name__) #Flask app instance
+#configure app db settings
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pets.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'your_secret_key_here'
 
+#logging setup
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+#initialize db and migrate
 db.init_app(app)
 migrate = Migrate(app, db)
 
+#add CORS headers to the response
 @app.after_request
 def after_request(response):
     response.headers.add('Access-Control-Allow-Origin', '*')
@@ -22,11 +27,13 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     return response
 
+#retrieve all pets endpoint
 @app.route('/pets', methods=['GET'])
 def get_pets():
     pets = Pet.query.all()
     return jsonify([pet.to_dict() for pet in pets])
 
+#retrieve single pet by ID endpoint
 @app.route('/pets/<int:pet_id>', methods=['GET'])
 def get_pet(pet_id):
     pet = Pet.query.get(pet_id)
@@ -42,6 +49,7 @@ def update_pet(pet_id):
         abort(404, 'Pet not found')
 
     data = request.get_json()
+    #update pet attributes based on provided info
     if 'name' in data:
         pet.name = data['name']
     if 'species' in data:
@@ -59,31 +67,34 @@ def update_pet(pet_id):
     db.session.commit()
     return jsonify(pet.to_dict())
 
+#endpoint to delete pet by ID
 @app.route('/pets/<int:pet_id>', methods=['DELETE'])
 def delete_pet(pet_id):
     pet = Pet.query.get(pet_id)
     if not pet:
         abort(404, 'Pet not found')
-    
+    #DELETE ALL ADOPTIONS ASSOCIATED WITH THE PET
     adoptions = Adoption.query.filter_by(pet_id=pet_id).all()
     for adoption in adoptions:
         db.session.delete(adoption)
-
+    #delete the pet
     db.session.delete(pet)
     db.session.commit()
     return jsonify({'message': 'Pet deleted successfully'})
-
+#create new adoption endpoint
 @app.route('/adoptions', methods=['POST'])
 def create_adoption():
     data = request.get_json()
     pet_id = data.get('pet_id')
     adopter_name = data.get('adopter_name')
 
+    #ensure both pet_id and adopter_name are provided
     if not pet_id or not adopter_name:
         abort(400, 'Both pet_id and adopter_name are required.')
-
+    #Retreive pet by ID
     pet = Pet.query.get(data['pet_id'])
     if pet:
+        #create new adoption and add it to db
         adoption = Adoption(pet_id=data['pet_id'], adopter_name=data['adopter_name'])
         db.session.add(adoption)
         db.session.commit()
@@ -91,5 +102,6 @@ def create_adoption():
     else:
         return jsonify({'error': 'Pet not found'}), 404
 
+#Run flask app
 if __name__ == '__main__':
     app.run(debug=True)

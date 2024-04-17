@@ -1,8 +1,10 @@
+#import necessary modules
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
-db = SQLAlchemy()
+db = SQLAlchemy() #SQLAlchemy instance creation
 
+#define pet model
 class Pet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
@@ -13,9 +15,10 @@ class Pet(db.Model):
     size = db.Column(db.String(10), nullable=False)
     image_url = db.Column(db.String(200))
     available = db.Column(db.Boolean, default=True)
-    adoptions = db.relationship('Adoption', backref='pet', lazy='dynamic')
+    adoptions = db.relationship('Adoption', backref='pet', lazy='dynamic') #define relationship btw pet and adoption model
 
     def to_dict(self):
+        #define method to convert Pet object to a dictionary
         return {
             'id': self.id,
             'name': self.name,
@@ -28,6 +31,7 @@ class Pet(db.Model):
             'available': self.available
         }
 
+#define adoption model
 class Adoption(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     pet_id = db.Column(db.Integer, db.ForeignKey('pet.id'), nullable=False)
@@ -35,6 +39,7 @@ class Adoption(db.Model):
     adoption_date = db.Column(db.DateTime, nullable=False, default=datetime.now)
 
     def to_dict(self):
+        #define method to convert Adoption object to a dictionary
         return {
             'id': self.id,
             'pet_id': self.pet_id,

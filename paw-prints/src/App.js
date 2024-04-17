@@ -1,54 +1,55 @@
-// App.js
-
 import React, { useState, useEffect } from 'react';
-import PetCard from './components/PetCard';
-import SearchBar from './components/SearchBar';
 import './App.css';
 
 function App() {
   const [pets, setPets] = useState([]);
-  const [filteredPets, setFilteredPets] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
-    // Fetch data from backend API when component mounts
-    fetchData();
+    fetch('http://localhost:5000/pets', {
+      mode: 'cors'
+    })
+      .then(response => response.json())
+      .then(data => {
+        setPets(data);
+      })
+      .catch(error => console.error('Error fetching pets:', error));
   }, []);
 
-  const fetchData = async () => {
-    try {
-      const response = await fetch('http://127.0.0.1:3000/pets');
-      const data = await response.json();
-      setPets(data);
-      setFilteredPets(data);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
+  const handleSearch = (event) =>{
+    setSearchTerm(event.target.value);
+  }
 
-  const handleSearch = (term) => {
-    setSearchTerm(term);
-    if (!term) {
-      setFilteredPets(pets);
-    } else {
-      const filtered = pets.filter((pet) =>
-        pet.name.toLowerCase().includes(term.toLowerCase())
-      );
-      setFilteredPets(filtered);
-    }
-  };
+  const filteredPets = pets.filter(pet => 
+  pet.name.toLowerCase().includes(searchTerm.toLowerCase())
+);
 
   return (
     <div className="App">
-      <h1>Welcome To Pet Adoption Center</h1>
-      <SearchBar searchTerm={searchTerm} onSearch={handleSearch} />
-      <div className="pet-grid">
-        {filteredPets.map((pet) => (
-          <PetCard key={pet.id} pet={pet} />
+      <h1>Pet Adoption</h1>
+      <input
+        type="text"
+        placeholder="Search by name"
+        value={searchTerm}
+        onChange={handleSearch}
+      />
+      <div className="pet-container">
+        {filteredPets.map(pet => (
+          <div key={pet.id} className="pet-tile">
+            <img src={pet.image_url} alt={pet.name} width="200" height="150" />
+            <h2>{pet.name}</h2>
+            <p>Species: {pet.species}</p>
+            <p>Breed: {pet.breed}</p>
+            <p>Age: {pet.age}</p>
+            <p>Gender: {pet.gender}</p>
+            <p>Size: {pet.size}</p>
+            <p>Available: {pet.available ? 'Yes' : 'No'}</p>
+          </div>
         ))}
       </div>
     </div>
   );
 }
+
 
 export default App;

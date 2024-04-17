@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -31,7 +32,7 @@ class Adoption(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     pet_id = db.Column(db.Integer, db.ForeignKey('pet.id'), nullable=False)
     adopter_name = db.Column(db.String(50), nullable=False)
-    adoption_date = db.Column(db.DateTime, nullable=False)
+    adoption_date = db.Column(db.DateTime, nullable=False, default=datetime.now)
 
     def to_dict(self):
         return {

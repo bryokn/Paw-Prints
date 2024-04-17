@@ -2,9 +2,9 @@
 
 import React from 'react';
 
-function SearchBar({ searchTerm, onSearch }) {
+function SearchBar({ searchTerm, onSearchTermChange }) {
   const handleChange = (event) => {
-    onSearch(event.target.value);
+    onSearchTermChange(event.target.value);
   };
 
   return (

@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request, abort
+from flask_migrate import Migrate
 from models import db, Pet, Adoption
 from datetime import datetime
 import logging
@@ -12,6 +13,14 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 db.init_app(app)
+migrate = Migrate(app, db)
+
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
 
 @app.route('/pets', methods=['GET'])
 def get_pets():
@@ -64,8 +73,6 @@ def delete_pet(pet_id):
     db.session.commit()
     return jsonify({'message': 'Pet deleted successfully'})
 
-       # return jsonify({'error': 'Pet not found'}), 404
-
 @app.route('/adoptions', methods=['POST'])
 def create_adoption():
     data = request.get_json()
@@ -74,10 +81,6 @@ def create_adoption():
 
     if not pet_id or not adopter_name:
         abort(400, 'Both pet_id and adopter_name are required.')
-
-    '''pet = Pet.query.get(pet_id)
-    if not pet:
-        abort(404, 'Pet not found.')'''
 
     pet = Pet.query.get(data['pet_id'])
     if pet:

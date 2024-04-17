@@ -31,7 +31,7 @@ pipenv install
 flask db upgrade
 flask run
 ```
-6. In a separate terminal, navigate to the `client` directory and start th React development server:
+6. In a separate terminal, navigate to the `paw-prints` directory and start the React development server:
 ```
 cd paw-prints
 npm install

@@ -88,20 +88,18 @@ def create_adoption():
     pet_id = data.get('pet_id')
     adopter_name = data.get('adopter_name')
 
-    #ensure both pet_id and adopter_name are provided
     if not pet_id or not adopter_name:
         abort(400, 'Both pet_id and adopter_name are required.')
-    #Retreive pet by ID
-    pet = Pet.query.get(data['pet_id'])
-    if pet:
-        #create new adoption and add it to db
-        adoption = Adoption(pet_id=data['pet_id'], adopter_name=data['adopter_name'])
+
+    pet = Pet.query.get(pet_id)
+    if pet and pet.available:  # Check if pet is available for adoption
+        adoption = Adoption(pet_id=pet_id, adopter_name=adopter_name, adoption_date=datetime.now())
+        pet.available = False  # Set pet availability to False
         db.session.add(adoption)
         db.session.commit()
         return jsonify(adoption.to_dict()), 201
     else:
-        return jsonify({'error': 'Pet not found'}), 404
-
+        return jsonify({'error': 'Pet not found or not available for adoption'}), 404
 #Run flask app
 if __name__ == '__main__':
     app.run(debug=True)

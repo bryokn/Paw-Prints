@@ -65,6 +65,17 @@ input[type="text"] {
 .pet-info div:first-child {
   font-weight: bold;
 }
+/* App.css */
+
+.adopt-button {
+  background-color: rgb(223, 137, 44);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
 
 
 

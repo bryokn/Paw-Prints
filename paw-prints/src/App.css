@@ -28,3 +28,55 @@ input[type="text"] {
   max-width: 400px;
   margin-bottom: 20px;
 }
+
+/* app.css */
+
+/* Styling for PetCard component */
+.pet-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px;
+  width: 200px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+}
+
+.pet-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.pet-image {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.pet-name {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.pet-info div {
+  margin-bottom: 4px;
+}
+
+.pet-info div:first-child {
+  font-weight: bold;
+}
+/* App.css */
+
+.adopt-button {
+  background-color: rgb(223, 137, 44);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+
+
+
+

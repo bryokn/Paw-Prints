@@ -5,6 +5,10 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-image: url('./images/adopt_me.jpg');
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh; 
 }
 
 code {

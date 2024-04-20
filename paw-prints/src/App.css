@@ -2,7 +2,25 @@
   text-align: center;
   max-width: 800px;
   margin: 0 auto;
+  font-family: verdana, Georgia, serif;
   }
+
+  .header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.menu {
+  display: flex;
+}
+
+.menu a {
+  margin-right: 10px;
+  text-decoration: none;
+  color: #333;
+}
 
 .pet-container {
   display: flex;
@@ -24,6 +42,33 @@
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
+.pet-details-modal{
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pet-details-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  max-width: 80%;
+}
+
+.close-button {
+  display: block;
+  margin-top: 10px;
+  margin-left: auto;
+}
+
 input[type="text"] {
   padding: 10px;
   font-size: 16px;
@@ -33,8 +78,6 @@ input[type="text"] {
   max-width: 400px;
   margin-bottom: 20px;
 }
-
-/* app.css */
 
 /* Styling for PetCard component */
 .pet-card {
@@ -70,9 +113,37 @@ input[type="text"] {
 .pet-info div:first-child {
   font-weight: bold;
 }
-/* App.css */
 
 .adopt-button {
+  background-color: rgb(44, 223, 59);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.adoption-modal {
+  position: fixed;
+  z-index: 2;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.adoption-modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5;
+}
+
+.view-button{
   background-color: rgb(223, 137, 44);
   color: white;
   border: none;
@@ -81,7 +152,31 @@ input[type="text"] {
   cursor: pointer;
 }
 
+.login-button{
+  background-color: rgb(223, 137, 44);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
 
+.create-ac-button{
+  background-color: rgb(44, 223, 59);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
 
+.cancel-button{
+  background-color: rgb(212, 50, 50);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
 
 

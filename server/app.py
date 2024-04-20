@@ -100,6 +100,19 @@ def create_adoption():
         return jsonify(adoption.to_dict()), 201
     else:
         return jsonify({'error': 'Pet not found or not available for adoption'}), 404
+
+#get adoptions endpoint    
+@app.route('/adoptions', methods=['GET'])
+def get_adoptions():
+    try:
+        #fetch all adoption from the db
+        adoptions = Adoption.query.all()
+        adoption_dicts = [adoption.to_dict() for adoption in adoptions] #convert adoption objects to dictionaries
+        return jsonify(adoption_dicts)
+    except Exception as e:
+        logger.error(f"Error retrieving adoptions: {str(e)}")
+        return jsonify({'error': 'Error retrieving adoptions'})
+    
 #Run flask app
 if __name__ == '__main__':
     app.run(debug=True)

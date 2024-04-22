@@ -1,6 +1,8 @@
 'use client'
 
-import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+//import React from 'react';
 import {
   Box,
   Flex,
@@ -10,12 +12,22 @@ import {
   Stack,
   Collapse,
   Icon,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
+  ModalFooter,
+  FormControl,
+  FormLabel,
   Popover,
   PopoverTrigger,
   PopoverContent,
   useColorModeValue,
   useBreakpointValue,
-  useDisclosure,
+  Input,
 } from '@chakra-ui/react';
 import {
   HamburgerIcon,
@@ -24,8 +36,98 @@ import {
   ChevronRightIcon,
 } from '@chakra-ui/icons';
 
-export default function WithSubnavigation() {
+
+export default function WithSubnavigation({ handleLogin, handleLogout, user }) {
   const { isOpen, onToggle } = useDisclosure();
+  const [showSignInModal, setShowSignInModal] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const navigate = useNavigate();
+
+  const handleSignIn = async (e) => {
+    e.preventDefault();
+
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    // Form validation
+    if (!email || !password) {
+      setErrorMessage('Please enter both email and password');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Login successful:', data);
+
+        const { user } = data;
+        localStorage.setItem('user', JSON.stringify(user));
+        setShowSignInModal(false); // Close the modal
+        setSuccessMessage('Successful sign in!');
+        //onSignInSuccess(); // Call the onSignInSuccess callback
+        navigate('/user');
+      } else {
+        setErrorMessage('Login failed');
+      }
+    } catch (error) {
+      console.error('Error occurred during login:', error);
+      setErrorMessage('An error occurred during login');
+    }
+  };
+
+  /**const handleSignIn = async (e) => {
+    e.preventDefault();
+
+    setErrorMessage(''); // Reset error message before submitting
+    setSuccessMessage('');
+
+    // Form validation
+    if (!email || !password) {
+      setErrorMessage('Please enter both email and password');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        // Handle successful login
+        const data = await response.json();
+        console.log('Login successful:', data);
+
+        const { user } = data;
+        localStorage.setItem('user', JSON.stringify(user));
+        setShowSignInModal(false); // Close the modal
+        
+        setSuccessMessage('Successful sign in!');
+        navigate('/user');
+      } else {
+        // Handle login error
+        setErrorMessage('Login failed');
+      }
+    } catch (error) {
+      console.error('Error occurred during login:', error);
+      setErrorMessage('An error occurred during login');
+    }
+  };**/
+
 
   return (
     <Box>
@@ -51,27 +153,90 @@ export default function WithSubnavigation() {
           />
         </Flex>
         <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
-          <Text
-            textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
-            fontFamily={'heading'}
-            color={useColorModeValue('gray.800', 'white')}>
-            Paw-Prints
-          </Text>
+  <Link to="/">
+    <Text
+      textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
+      fontFamily={'Verdana'}
+      fontWeight={'bold'}
+      fontStyle={'italic'}
+      fontSize={'xl'}
+      color={useColorModeValue('gray.800', 'white')}
+      _hover={{ color: 'blue' }}
+    >
+      Paw-Prints
+    </Text>
+  </Link>
 
-          <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-            <DesktopNav />
-          </Flex>
-        </Flex>
+  <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
+    <DesktopNav />
+  </Flex>
+</Flex>
 
         <Stack
           flex={{ base: 1, md: 0 }}
           justify={'flex-end'}
           direction={'row'}
           spacing={6}>
-          <Button as={'a'} fontSize={'sm'} fontWeight={400} variant={'link'} href={'#'}>
+          <Button as={'a'}
+            display={{ base: 'none', md: 'inline-flex' }}
+            fontSize={'sm'}
+            fontWeight={900}
+            color={'white'}
+            bg={'green.400'}
+            href={'#'}
+            _hover={{
+              bg: 'blue.300',
+            }} variant={''}
+            onClick= {() => setShowSignInModal(true)}
+            >
             Sign In
           </Button>
-          <Button
+
+          <Modal isOpen={showSignInModal} onClose={() => setShowSignInModal(false)}>
+  <ModalOverlay />
+  <ModalContent>
+    <ModalHeader>Sign In</ModalHeader>
+    <ModalCloseButton />
+    <ModalBody>
+      {successMessage && <p>{successMessage}</p>}
+      {errorMessage && <p>{errorMessage}</p>}
+      <form onSubmit={handleSignIn}>
+        <FormControl>
+          <FormLabel>Email</FormLabel>
+          <Input
+            type="email"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setErrorMessage('');
+            }}
+          />
+        </FormControl>
+        <FormControl mt={4}>
+          <FormLabel>Password</FormLabel>
+          <Input
+            type="password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setErrorMessage('');
+            }}
+          />
+        </FormControl>
+      </form>
+    </ModalBody>
+    <ModalFooter>
+      <Button colorScheme="blue" mr={3} onClick={handleSignIn}>
+        Sign In
+      </Button>
+      <Button variant="ghost" onClick={() => setShowSignInModal(false)}>
+        Cancel
+      </Button>
+    </ModalFooter>
+  </ModalContent>
+</Modal>
+
+          {/**<Button
             as={'a'}
             display={{ base: 'none', md: 'inline-flex' }}
             fontSize={'sm'}
@@ -83,7 +248,7 @@ export default function WithSubnavigation() {
               bg: 'pink.300',
             }}>
             Sign Up
-          </Button>
+          </Button>*/}
         </Stack>
       </Flex>
 
@@ -92,12 +257,25 @@ export default function WithSubnavigation() {
       </Collapse>
     </Box>
   );
+
 }
 
-const DesktopNav = () => {
+const DesktopNav = ({handleLogin, handleLogout, user}) => {
   const linkColor = useColorModeValue('gray.600', 'gray.200');
   const linkHoverColor = useColorModeValue('gray.800', 'white');
   const popoverContentBgColor = useColorModeValue('white', 'gray.800');
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = (e) =>{
+    e.preventDefault();
+    //login logic here
+    const userData = { username, password };
+    handleLogin(userData);
+    setIsOpen(false);
+  };
 
   return (
     <Stack direction={'row'} spacing={4}>
@@ -109,12 +287,12 @@ const DesktopNav = () => {
                 as="a"
                 p={2}
                 href={navItem.href ?? '#'}
-                fontSize={'sm'}
-                fontWeight={500}
+                fontSize={'md'}
+                fontWeight={800}
                 color={linkColor}
                 _hover={{
                   textDecoration: 'none',
-                  color: linkHoverColor,
+                  color: 'blue',
                 }}>
                 {navItem.label}
               </Box>
@@ -240,10 +418,10 @@ const MobileNavItem = (navItem) => {
 const NAV_ITEMS = [
   {
     label: 'About Paw Prints',
-    href: '#',
+    href: '/about',
   },
   {
     label: 'Contact Us',
-    href: '#',
+    href: '/contact',
   },
 ]

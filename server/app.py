@@ -1,9 +1,10 @@
 #import necessary modules
 from flask import Flask, jsonify, request, abort
 from flask_migrate import Migrate
-from models import db, Pet, Adoption #import db models
+from models import db, Pet, Adoption, Users #import db models
 from datetime import datetime
 import logging
+from werkzeug.security import check_password_hash
 
 app = Flask(__name__) #Flask app instance
 #configure app db settings
@@ -112,6 +113,26 @@ def get_adoptions():
     except Exception as e:
         logger.error(f"Error retrieving adoptions: {str(e)}")
         return jsonify({'error': 'Error retrieving adoptions'})
+    
+#login endpoint
+@app.route('/api/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+    
+    if not email or not password:
+        return jsonify({'error': 'Email and password are required'}), 400
+    #user by email
+    user = Users.query.filter_by(email=email).first()
+    if not user or not check_password_hash(user.password_hash, password):
+        return jsonify({'error': 'Invalid email or password'}), 401
+    
+    return jsonify({
+        'id': user.id,
+        'username': user.username,
+        'email': user.email
+    })
     
 #Run flask app
 if __name__ == '__main__':

@@ -3,17 +3,33 @@ import './App.css';
 import { ChakraProvider } from '@chakra-ui/react';
 import WithSubnavigation from './components/WithSubnavigation';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import LoginPage from './components/LoginPage';
+import SignInPage from './components/SignInPage';
+import AboutPage from './components/AboutPage';
+import ContactPage from './components/ContactPage';
+import UserPage from './components/UserPage';
 
 function App() {
   const [pets, setPets] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPet, setSelectedPet] = useState(null);
   const [showAdoptionModal, setShowAdoptionModal] = useState(false);
+  const [user, setUser] = useState(null);
+  //const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  useEffect(() => {
-    fetchPets(); // Fetch pets when component mounts
-  }, []);
+useEffect(() => {
+  fetchPets(); // Fetch pets when component mounts
+  const storedUser = localStorage.getItem('user');
+  if (storedUser) {
+    try {
+      const userObject = JSON.parse(storedUser);
+        setUser(userObject);
+      } catch (error) {
+        console.error('Error parsing user data from local storage:', error);
+        localStorage.removeItem('user');
+    }
+  }
+}, []);
+
 
   // Fetch list of pets
   const fetchPets = () => {
@@ -47,16 +63,15 @@ function App() {
     setSelectedPet(null);
   };
 
-  // Handle adoption process
-  const handleAdoption = () => {
-    const confirmAdoption = window.confirm(
-      'To adopt this pet, you need to log in or create an account. Do you want to proceed?'
-    );
+  //handle login and logout
+  const handleLogin = (userData) => {
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
+  };
 
-    if (confirmAdoption) {
-      // Navigate to the login page
-      window.location.href = '/login';
-    }
+  const handleLogout =() => {
+    setUser(null);
+    localStorage.removeItem('user');
   };
 
   // Handle closing modals
@@ -93,15 +108,24 @@ function App() {
     }
   };
 
+  //handles signin success
+  //const handleSignInSuccess =() =>{
+   // setIsAuthenticated(true);
+ // };
+
   return (
     <ChakraProvider>
       <Router>
-        <WithSubnavigation />
+        <WithSubnavigation handleLogin={handleLogin} handleLogout={handleLogout} user={user} />
         <Routes>
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signin" element={<SignInPage  />} />
+          <Route path ="/about" element={<AboutPage />} />
+          <Route path ="/contact" element={<ContactPage />} />
+          <Route path ="/user" element={ <UserPage />} />
           <Route path="/" element={
             <div className="App">
               {/**<h1>Paw-Prints</h1>*/}
+              {user && <h3>Welcome, {user.username}!</h3>}
               <h2>Where Every Paw Finds Its Perfect Print</h2>
               <h3>
                 <i>Your Path to Pet Adoption!</i>
@@ -121,9 +145,6 @@ function App() {
                     {/* Render the pet's image, name, and other details */}
                     <img src={pet.image_url} alt={pet.name} width="200" height="150" />
                     <h2>{pet.name}</h2>
-                    {/**<p>Species: {pet.species}</p>
-                    <p>Breed: {pet.breed}</p>
-                    <p>Age: {pet.age}</p>*/}
                     <p>Gender: {pet.gender}</p>
                     <p>Available: {pet.available ? 'Yes' : 'No'}</p>
                     {pet.available && ( // Render adopt button if the pet is available
@@ -141,8 +162,7 @@ function App() {
                     <p><h4><i>Likes:</i></h4>{selectedPet.likes}</p>
                     <p><h4><i>About:</i></h4>{selectedPet.about}</p>
                     <p><h4><i>Size:</i></h4> {selectedPet.size}</p>
-                    <button className="adopt-button" onClick={handleAdoption}>
-                      Adopt {selectedPet.name}
+                    <button className="adopt-button">Do you want to adopt {selectedPet.name}?<br /> Sign in to continue the adoption process.
                     </button>
                     <br />
                     <br />

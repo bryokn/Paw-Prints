@@ -86,48 +86,6 @@ export default function WithSubnavigation({ handleLogin, handleLogout, user }) {
     }
   };
 
-  /**const handleSignIn = async (e) => {
-    e.preventDefault();
-
-    setErrorMessage(''); // Reset error message before submitting
-    setSuccessMessage('');
-
-    // Form validation
-    if (!email || !password) {
-      setErrorMessage('Please enter both email and password');
-      return;
-    }
-
-    try {
-      const response = await fetch('http://localhost:5000/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (response.ok) {
-        // Handle successful login
-        const data = await response.json();
-        console.log('Login successful:', data);
-
-        const { user } = data;
-        localStorage.setItem('user', JSON.stringify(user));
-        setShowSignInModal(false); // Close the modal
-        
-        setSuccessMessage('Successful sign in!');
-        navigate('/user');
-      } else {
-        // Handle login error
-        setErrorMessage('Login failed');
-      }
-    } catch (error) {
-      console.error('Error occurred during login:', error);
-      setErrorMessage('An error occurred during login');
-    }
-  };**/
-
 
   return (
     <Box>
